@@ -95,13 +95,13 @@ export function AuthProvider({ children }) {
     };
   };
 
-  const register = async (email, password, firstName, lastName) => {
+  const register = async (userPayload) => {
     setLoading(true);
     try {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, firstName, lastName }),
+        body: JSON.stringify(userPayload),
       });
 
       if (response.ok) {
@@ -112,17 +112,32 @@ export function AuthProvider({ children }) {
         return { success: true };
       } else {
         const errorData = await response.json();
-        return tryLocalRegister(email, password, firstName, lastName, errorData.error);
+        return tryLocalRegister(userPayload, errorData.error);
       }
     } catch (error) {
       console.warn('Network error registering, attempting local storage registration:', error);
-      return tryLocalRegister(email, password, firstName, lastName, 'Network connection failure.');
+      return tryLocalRegister(userPayload, 'Network connection failure.');
     } finally {
       setLoading(false);
     }
   };
 
-  const tryLocalRegister = (email, password, firstName, lastName, serverError) => {
+  const tryLocalRegister = (userPayload, serverError) => {
+    const {
+      email,
+      password,
+      fullName,
+      phoneNumber,
+      gender,
+      height,
+      weight,
+      heightUnit,
+      weightUnit,
+      age,
+      workoutFrequency,
+      goal,
+    } = userPayload;
+
     const localUsersStr = localStorage.getItem('calora_users_db') || '[]';
     const localUsers = JSON.parse(localUsersStr);
 
@@ -131,25 +146,41 @@ export function AuthProvider({ children }) {
       return { success: false, error: 'An account with this email already exists locally.' };
     }
 
+    const names = (fullName || '').trim().split(/\s+/);
+    const firstName = names[0] || 'Protein';
+    const lastName = names.slice(1).join(' ') || 'Enthusiast';
+
+    // Lazy load fitness parameters calculation
+    const { calculateFitnessParams } = require('@/utils/fitness');
+    const fitnessParams = calculateFitnessParams({
+      weight: parseFloat(weight) || 70,
+      height: parseFloat(height) || 170,
+      age: parseInt(age, 10) || 25,
+      gender: gender || 'male',
+      workoutFrequency: workoutFrequency || '3-4',
+      goal: goal || 'maintain',
+    });
+
     const newLocalUser = {
       _id: 'local_' + Math.random().toString(36).substr(2, 9),
       email: email.toLowerCase(),
       passwordMock: password, // Simple placeholder for local login
-      firstName: firstName || 'Protein',
-      lastName: lastName || 'Enthusiast',
-      age: 25,
-      gender: 'male',
-      height: 175,
-      weight: 70,
-      workoutFrequency: '3-4',
-      goal: 'maintain',
-      heightUnit: 'cm',
-      weightUnit: 'kg',
+      firstName,
+      lastName,
+      phoneNumber: phoneNumber || '',
+      age: parseInt(age, 10) || 25,
+      gender: gender || 'male',
+      height: parseFloat(height) || 170,
+      weight: parseFloat(weight) || 70,
+      workoutFrequency: workoutFrequency || '3-4',
+      goal: goal || 'maintain',
+      heightUnit: heightUnit || 'cm',
+      weightUnit: weightUnit || 'kg',
       xp: 0,
       streak: 0,
       badges: [],
-      targetCalories: 2000,
-      targetMacros: { protein: 120, carbs: 200, fat: 65 },
+      targetCalories: fitnessParams.targetCalories,
+      targetMacros: fitnessParams.macros,
       createdAt: new Date().toISOString(),
     };
 
