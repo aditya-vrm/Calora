@@ -1,65 +1,124 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import SplashLoader from '@/components/SplashLoader';
+import Button from '@/components/UI/Button';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Flame, ArrowRight } from 'lucide-react';
+
+export default function WelcomePage() {
+  const router = useRouter();
+  const { user, loading } = useAuth();
+  const [showSplash, setShowSplash] = useState(true);
+
+  // If user is already logged in, redirect them to dashboard
+  useEffect(() => {
+    if (!loading && user) {
+      // If user profile height is unset, they haven't finished onboarding
+      if (!user.height || user.height === 175 && !user.firstName) {
+        router.push('/onboarding');
+      } else {
+        router.push('/dashboard');
+      }
+    }
+  }, [user, loading, router]);
+
+  if (loading || (user && showSplash)) {
+    return <SplashLoader onComplete={() => setShowSplash(false)} />;
+  }
+
+  if (showSplash) {
+    return <SplashLoader onComplete={() => setShowSplash(false)} />;
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="relative min-h-screen flex flex-col justify-between py-12 px-4 overflow-hidden bg-black select-none">
+      {/* Premium Animated Gradient Background */}
+      <div className="absolute top-[-20%] left-[-20%] w-[140%] h-[60%] rounded-full bg-radial from-accent-glow to-transparent opacity-60 blur-3xl pointer-events-none animate-pulse" />
+      
+      {/* Header */}
+      <motion.header
+        initial={{ y: -10, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="w-full flex items-center justify-between z-10"
+      >
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+            <Flame className="w-4 h-4 text-accent-red-hover drop-shadow-[0_0_8px_rgba(255,45,45,0.4)]" />
+          </div>
+          <span className="font-manrope text-sm font-extrabold tracking-wider text-white">
+            CALORA
+          </span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        <button
+          onClick={() => router.push('/auth')}
+          className="font-manrope text-xs font-semibold text-white/60 hover:text-white transition-colors"
+        >
+          Sign In
+        </button>
+      </motion.header>
+
+      {/* Main Hero */}
+      <div className="flex-grow flex flex-col justify-center max-w-sm mx-auto text-center z-10 my-12">
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mb-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/60 text-xs font-semibold tracking-wide uppercase mx-auto"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-accent-red animate-ping" />
+          Offline-First Shell v1.0
+        </motion.div>
+
+        <motion.h1
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="font-manrope text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-6 leading-[1.1]"
+        >
+          Track Calories.
+          <br />
+          <span className="bg-gradient-to-r from-accent-red to-accent-red-hover bg-clip-text text-transparent red-text-glow">
+            Build Discipline.
+          </span>
+        </motion.h1>
+
+        <motion.p
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="font-sans text-sm text-white/50 leading-relaxed mb-10 max-w-[280px] mx-auto"
+        >
+          A highly-animated, OLED-optimized calorie and fitness tracker tailored for peak performance and visual perfection.
+        </motion.p>
+
+        <motion.div
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+        >
+          <Button
+            onClick={() => router.push('/auth')}
+            className="w-full py-4 text-base font-bold shadow-lg shadow-accent-red/20 group"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+            Start Free
+            <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+          </Button>
+        </motion.div>
+      </div>
+
+      {/* Footer Branding */}
+      <motion.footer
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.2 }}
+        transition={{ duration: 0.8, delay: 0.6 }}
+        className="w-full text-center text-[10px] tracking-widest uppercase text-white/80 z-10"
+      >
+        Inspired by Apple Fitness & Nothing OS
+      </motion.footer>
     </div>
   );
 }
