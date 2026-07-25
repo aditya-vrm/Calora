@@ -524,19 +524,19 @@ export default function ProfilePage() {
       </GlassCard>
 
       {/* Account Deletion and Logout Action Buttons */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 border-t border-white/5 pt-6 mt-4">
         <Button
           variant="secondary"
           onClick={handleLogout}
-          className="w-full py-4 text-xs uppercase tracking-wider font-bold border border-white/10 hover:border-white/20"
+          className="w-full py-4 text-xs uppercase tracking-wider font-bold border border-white/10 hover:border-red-500/30 hover:text-red-500 transition-all shadow-md hover:shadow-red-500/5"
         >
-          <LogOut size={14} className="text-white/60" />
+          <LogOut size={14} />
           Logout Session
         </Button>
 
         <button
           onClick={handleDeleteAccount}
-          className="w-full py-4 rounded-2xl bg-red-950/15 border border-red-500/10 hover:bg-red-950/30 hover:border-red-500/20 text-red-500 font-manrope text-xs uppercase tracking-wider font-bold transition-all flex items-center justify-center gap-1.5 select-none focus:outline-none"
+          className="w-full py-4 rounded-2xl bg-red-950/5 border border-red-500/5 hover:bg-red-950/20 hover:border-red-500/15 text-white/30 hover:text-red-400 font-manrope text-xs uppercase tracking-wider font-bold transition-all flex items-center justify-center gap-1.5 select-none focus:outline-none"
         >
           <Trash2 size={14} />
           Delete Calora Account
