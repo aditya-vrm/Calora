@@ -3,6 +3,7 @@ import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 import { AppProvider } from '@/context/AppContext';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
+import Navbar from '@/components/Navbar';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -40,6 +41,7 @@ export default function RootLayout({ children }) {
             <main className="flex-grow flex flex-col w-full max-w-md md:max-w-2xl lg:max-w-4xl mx-auto px-4 pb-28 pt-4">
               {children}
             </main>
+            <Navbar />
           </AppProvider>
         </AuthProvider>
       </body>
