@@ -17,12 +17,18 @@ const manrope = Manrope({
   display: 'swap',
 });
 
+export const viewport = {
+  themeColor: '#000000',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export const metadata = {
   title: 'Calora | Premium Calorie & Fitness Tracker',
   description: 'An OLED Black calorie, BMI, steps, and weight tracker with premium aesthetics, gamification, and offline-first capabilities.',
   manifest: '/manifest.json',
-  themeColor: '#000000',
-  viewport: 'width-device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
   appleWebAppCapable: 'yes',
   appleWebAppStatusBarStyle: 'black-translucent',
 };
