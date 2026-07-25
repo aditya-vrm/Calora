@@ -1,0 +1,31 @@
+{
+  "name": "Calora | Premium Calorie & Fitness",
+  "short_name": "Calora",
+  "description": "An OLED Black calorie, BMI, steps, and weight tracker with premium aesthetics, gamification, and offline-first capabilities.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "categories": ["fitness", "health", "lifestyle"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "purpose": "any"
+    }
+  ]
+}
