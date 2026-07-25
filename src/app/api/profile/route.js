@@ -40,6 +40,7 @@ export async function PUT(request) {
       'xp',
       'streak',
       'badges',
+      'targetSteps',
     ];
 
     // Apply updates

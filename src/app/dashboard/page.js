@@ -263,14 +263,14 @@ export default function Dashboard() {
                 {totals.steps || 0} <span className="text-xs text-white/40 font-semibold uppercase tracking-wider">Steps</span>
               </h4>
               <p className="font-sans text-[10px] text-white/40 leading-relaxed mb-2.5">
-                Goal: 10,000 steps (+15 XP on completion).
+                Goal: {(user.targetSteps || 10000).toLocaleString()} steps (+15 XP on completion).
               </p>
               <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
                 <motion.div
                   className="h-full bg-sky-400"
-                  style={{ width: `${Math.min(100, ((totals.steps || 0) / 10000) * 100)}%` }}
+                  style={{ width: `${Math.min(100, ((totals.steps || 0) / (user.targetSteps || 10000)) * 100)}%` }}
                   initial={{ width: 0 }}
-                  animate={{ width: `${Math.min(100, ((totals.steps || 0) / 10000) * 100)}%` }}
+                  animate={{ width: `${Math.min(100, ((totals.steps || 0) / (user.targetSteps || 10000)) * 100)}%` }}
                   transition={{ duration: 0.8 }}
                 />
               </div>

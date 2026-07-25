@@ -76,6 +76,10 @@ const UserSchema = new mongoose.Schema(
       type: Number,
       default: 2000,
     },
+    targetSteps: {
+      type: Number,
+      default: 10000,
+    },
     targetMacros: {
       protein: { type: Number, default: 120 },
       carbs: { type: Number, default: 200 },

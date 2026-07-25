@@ -32,6 +32,7 @@ export default function ProfilePage() {
 
   const [workoutFrequency, setWorkoutFrequency] = useState('3-4');
   const [goal, setGoal] = useState('maintain');
+  const [targetSteps, setTargetSteps] = useState(10000);
 
   // Setting preferences states
   const [allowNotifications, setAllowNotifications] = useState(true);
@@ -65,6 +66,7 @@ export default function ProfilePage() {
 
       setWorkoutFrequency(user.workoutFrequency || '3-4');
       setGoal(user.goal || 'maintain');
+      setTargetSteps(user.targetSteps || 10000);
     }
   }, [user]);
 
@@ -136,6 +138,7 @@ export default function ProfilePage() {
       weightUnit,
       workoutFrequency,
       goal,
+      targetSteps,
     };
 
     const res = await updateProfile(payload);
@@ -422,6 +425,19 @@ export default function ProfilePage() {
               <option value="lean-bulk" className="bg-black">Lean Bulk</option>
               <option value="gain" className="bg-black">Muscle Gain / Bulk</option>
             </select>
+          </div>
+
+          {/* Steps goal selection */}
+          <div className="flex flex-col gap-2">
+            <label className="font-manrope text-xs font-semibold text-white/50 tracking-wider uppercase ml-1">
+              Daily Steps Goal
+            </label>
+            <Input
+              type="number"
+              value={targetSteps}
+              onChange={(e) => setTargetSteps(Math.max(1000, parseInt(e.target.value, 10) || ''))}
+              required
+            />
           </div>
 
           <Button

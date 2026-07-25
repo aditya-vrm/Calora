@@ -216,7 +216,7 @@ export default function RecordsPage() {
         <div>
           <span className="block text-[8px] text-white/40 uppercase font-bold tracking-wider">Steps today</span>
           <span className="font-manrope text-sm font-extrabold text-white">
-            {totals.steps} / 10k <span className="text-[10px] text-white/40 font-medium">steps</span>
+            {totals.steps} / {user.targetSteps ? (user.targetSteps >= 1000 ? `${user.targetSteps / 1000}k` : user.targetSteps) : '10k'} <span className="text-[10px] text-white/40 font-medium">steps</span>
           </span>
         </div>
         <div>
@@ -482,7 +482,7 @@ export default function RecordsPage() {
                 />
                 
                 <p className="font-sans text-[10px] text-white/40 leading-relaxed text-left px-1">
-                  Log your daily activity levels to complete challenges. Target 10,000 steps (+15 XP).
+                  Log your daily activity levels to complete challenges. Target {(user.targetSteps || 10000).toLocaleString()} steps (+15 XP).
                 </p>
 
                 <Button

@@ -136,6 +136,7 @@ export function AuthProvider({ children }) {
       age,
       workoutFrequency,
       goal,
+      targetSteps,
     } = userPayload;
 
     const localUsersStr = localStorage.getItem('calora_users_db') || '[]';
@@ -180,6 +181,7 @@ export function AuthProvider({ children }) {
       streak: 0,
       badges: [],
       targetCalories: fitnessParams.targetCalories,
+      targetSteps: parseInt(targetSteps, 10) || 10000,
       targetMacros: fitnessParams.macros,
       createdAt: new Date().toISOString(),
     };

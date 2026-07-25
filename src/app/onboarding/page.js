@@ -38,6 +38,7 @@ export default function OnboardingWizard() {
   const [age, setAge] = useState(25);
   const [workoutFrequency, setWorkoutFrequency] = useState('3-4'); // '0' | '1-2' | '3-4' | '5-6' | '7'
   const [selectedGoal, setSelectedGoal] = useState('maintain'); // 'lose' | 'maintain' | 'gain'
+  const [targetSteps, setTargetSteps] = useState(10000);
 
   // Step 4: Calculations Preview
   const [preview, setPreview] = useState(null);
@@ -151,6 +152,7 @@ export default function OnboardingWizard() {
       age: parseInt(age, 10),
       workoutFrequency,
       goal: selectedGoal,
+      targetSteps,
     };
 
     const res = await register(signupPayload);
@@ -474,6 +476,27 @@ export default function OnboardingWizard() {
                   />
                 </div>
 
+                {/* Steps Goal Range Slider */}
+                <div className="flex flex-col gap-2">
+                  <div className="flex justify-between items-center px-1">
+                    <span className="font-manrope text-xs font-semibold text-white/50 tracking-wider uppercase">
+                      Daily Steps Goal
+                    </span>
+                    <span className="font-manrope text-sm font-extrabold text-white">
+                      {targetSteps.toLocaleString()} steps
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="3000"
+                    max="20000"
+                    step="500"
+                    value={targetSteps}
+                    onChange={(e) => setTargetSteps(parseInt(e.target.value, 10))}
+                    className="w-full accent-accent-red cursor-pointer bg-white/10 rounded-lg appearance-none h-1.5"
+                  />
+                </div>
+
                 {/* Workout Session Frequency Options */}
                 <div className="flex flex-col gap-2">
                   <span className="font-manrope text-xs font-semibold text-white/50 tracking-wider uppercase ml-1">
@@ -533,7 +556,7 @@ export default function OnboardingWizard() {
                     Your Calorie Calculations
                   </h3>
                   <p className="text-xs text-white/40 uppercase tracking-widest font-semibold">
-                    Select your goal to finish up
+                    Calculated daily calorie requirements
                   </p>
                 </div>
 
@@ -558,23 +581,16 @@ export default function OnboardingWizard() {
                 {/* Calorie Cards with Interactive Toggles to select goal */}
                 <div className="flex flex-col gap-2.5">
                   {[
-                    { key: 'maintain', label: 'Maintenance Calories', val: preview.maintenance, desc: 'Maintain body weight composition' },
-                    { key: 'lose', label: 'Weight Loss Calories', val: preview.maintenance - 500, desc: '-500 kcal fat loss target' },
-                    { key: 'gain', label: 'Weight Gain Calories', val: preview.maintenance + 500, desc: '+500 kcal muscle bulk target' },
+                    { key: 'maintain', label: 'Maintenance Calories', val: preview.maintenance, desc: 'Daily energy requirements' },
+                    { key: 'lose', label: 'Weight Loss Calories', val: preview.maintenance - 500, desc: 'Target calorie deficit' },
+                    { key: 'gain', label: 'Weight Gain Calories', val: preview.maintenance + 500, desc: 'Target calorie surplus' },
                   ].map((card) => (
                     <div
                       key={card.key}
-                      onClick={() => setSelectedGoal(card.key)}
-                      className={`p-3.5 rounded-2xl border text-left cursor-pointer transition-all flex items-center justify-between ${
-                        selectedGoal === card.key
-                          ? 'bg-accent-red/10 border-accent-red shadow-lg shadow-accent-red/5'
-                          : 'bg-white/3 border-white/5 hover:border-white/10'
-                      }`}
+                      className="p-3.5 rounded-2xl border bg-white/3 border-white/5 text-left transition-all"
                     >
                       <div>
-                        <span className={`font-manrope text-[9px] font-bold uppercase tracking-wider ${
-                          selectedGoal === card.key ? 'text-accent-red-hover' : 'text-white/40'
-                        }`}>
+                        <span className="font-manrope text-[9px] font-bold uppercase tracking-wider text-white/40">
                           {card.label}
                         </span>
                         <h4 className="font-manrope text-base font-black text-white mt-0.5">
@@ -583,13 +599,6 @@ export default function OnboardingWizard() {
                         <p className="font-sans text-[9px] text-white/40 mt-0.5">
                           {card.desc}
                         </p>
-                      </div>
-                      <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
-                        selectedGoal === card.key
-                          ? 'bg-accent-red border-accent-red text-white'
-                          : 'border-white/10'
-                      }`}>
-                        {selectedGoal === card.key && <Check size={12} />}
                       </div>
                     </div>
                   ))}

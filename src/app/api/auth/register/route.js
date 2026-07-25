@@ -24,6 +24,7 @@ export async function POST(request) {
       age,
       workoutFrequency,
       goal,
+      targetSteps,
     } = body;
 
     if (!email || !password) {
@@ -79,6 +80,7 @@ export async function POST(request) {
       streak: 0,
       badges: [],
       targetCalories: fitnessParams.targetCalories,
+      targetSteps: parseInt(targetSteps, 10) || 10000,
       targetMacros: fitnessParams.macros,
     });
 
