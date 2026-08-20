@@ -14,6 +14,7 @@ export default function Input({
   required = false,
   className = '',
   icon: Icon,
+  rightElement,
   ...props
 }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -43,7 +44,7 @@ export default function Input({
           className={`w-full py-3.5 ${
             Icon ? 'pl-12' : 'px-4'
           } ${
-            isPassword ? 'pr-12' : 'pr-4'
+            isPassword || rightElement ? 'pr-12' : 'pr-4'
           } glass-input text-sm font-sans tracking-wide ${
             error ? 'border-red-500/50 focus:border-red-500/80 focus:shadow-red-500/10' : ''
           }`}
@@ -57,6 +58,11 @@ export default function Input({
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
+        )}
+        {rightElement && !isPassword && (
+          <div className="absolute right-4 flex items-center justify-center">
+            {rightElement}
+          </div>
         )}
       </div>
       {error && (

@@ -7,8 +7,8 @@ import { useApp } from '@/context/AppContext';
 import GlassCard from '@/components/UI/GlassCard';
 import Input from '@/components/UI/Input';
 import Button from '@/components/UI/Button';
-import { searchFoodDatabase, scaleNutrients } from '@/utils/mockFoodDb';
-import { Search, Apple, Weight, HelpCircle, Activity, Plus, Trash2, ClipboardList, Dumbbell } from 'lucide-react';
+import { searchFoodDatabase, scaleNutrients, MOCK_FOOD_DB } from '@/utils/mockFoodDb';
+import { Search, Apple, Weight, HelpCircle, Activity, Plus, Trash2, ClipboardList, Dumbbell, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function RecordsPage() {
@@ -21,9 +21,9 @@ export default function RecordsPage() {
 
   // Food log states
   const [foodSearch, setFoodSearch] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
   const [selectedFood, setSelectedFood] = useState(null);
   const [isManualEntry, setIsManualEntry] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   
   const [foodName, setFoodName] = useState('');
   const [weightGrams, setWeightGrams] = useState(100);
@@ -46,14 +46,7 @@ export default function RecordsPage() {
     setTodayStr(new Date().toISOString().split('T')[0]);
   }, []);
 
-  // Sync Search results
-  useEffect(() => {
-    if (foodSearch && !selectedFood) {
-      setSearchResults(searchFoodDatabase(foodSearch));
-    } else {
-      setSearchResults([]);
-    }
-  }, [foodSearch, selectedFood]);
+
 
   // Sync scaled nutrients when selected food or weight changes
   useEffect(() => {
@@ -87,7 +80,7 @@ export default function RecordsPage() {
   const handleSelectFood = (food) => {
     setSelectedFood(food);
     setFoodSearch(food.foodName);
-    setSearchResults([]);
+    setIsDropdownOpen(false);
   };
 
   const handleClearFood = () => {
@@ -98,6 +91,7 @@ export default function RecordsPage() {
     setProtein('');
     setCarbs('');
     setFat('');
+    setIsDropdownOpen(false);
   };
 
   const handleLogFood = async (e) => {
@@ -192,8 +186,10 @@ export default function RecordsPage() {
     (r) => r.date === todayStr && r.type === activeTab
   );
 
+  const displayFoods = (foodSearch.trim() === '' || selectedFood) ? MOCK_FOOD_DB : searchFoodDatabase(foodSearch);
+
   return (
-    <div className="flex flex-col gap-6 w-full pb-20 select-none">
+    <div className="flex flex-col gap-6 w-full pb-20">
       {/* Page Title */}
       <div className="mt-2">
         <span className="font-manrope text-[10px] font-extrabold text-accent-red-hover uppercase tracking-widest flex items-center gap-1.5">
@@ -287,23 +283,56 @@ export default function RecordsPage() {
                     onChange={(e) => {
                       setFoodSearch(e.target.value);
                       if (selectedFood) setSelectedFood(null);
+                      setIsDropdownOpen(true);
                     }}
+                    onFocus={() => setIsDropdownOpen(true)}
                     icon={Search}
+                    rightElement={
+                      selectedFood ? (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleClearFood();
+                          }}
+                          className="text-[10px] font-bold text-accent-red hover:underline focus:outline-none"
+                        >
+                          Clear
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsDropdownOpen(!isDropdownOpen);
+                          }}
+                          className="text-white/40 hover:text-white/80 transition-colors focus:outline-none"
+                        >
+                          <ChevronDown
+                            size={18}
+                            className={`transition-transform duration-200 ${
+                              isDropdownOpen ? 'rotate-180' : ''
+                            }`}
+                          />
+                        </button>
+                      )
+                    }
                   />
-                  {selectedFood && (
-                    <button
-                      onClick={handleClearFood}
-                      className="absolute right-4 top-9.5 text-[10px] font-bold text-accent-red hover:underline focus:outline-none"
-                    >
-                      Clear Selection
-                    </button>
+                  {isDropdownOpen && (
+                    <div
+                      className="fixed inset-0 z-20 cursor-default"
+                      onClick={() => setIsDropdownOpen(false)}
+                    />
                   )}
-                  {searchResults.length > 0 && (
-                    <div className="absolute top-16 left-0 right-0 z-30 bg-[#0F0F0F] border border-white/10 rounded-2xl overflow-hidden shadow-2xl max-h-48 overflow-y-auto no-scrollbar">
-                      {searchResults.map((food) => (
+                  {isDropdownOpen && displayFoods.length > 0 && (
+                    <div className="absolute top-full mt-1 left-0 right-0 z-30 bg-[#0F0F0F] border border-white/10 rounded-2xl overflow-hidden shadow-2xl max-h-48 overflow-y-auto no-scrollbar">
+                      {displayFoods.map((food) => (
                         <div
                           key={food.foodName}
-                          onClick={() => handleSelectFood(food)}
+                          onClick={() => {
+                            handleSelectFood(food);
+                            setIsDropdownOpen(false);
+                          }}
                           className="py-3 px-4 border-b border-white/5 hover:bg-white/5 cursor-pointer text-left flex justify-between items-center transition-colors"
                         >
                           <span className="font-manrope text-xs font-bold text-white">

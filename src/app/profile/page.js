@@ -225,7 +225,7 @@ export default function ProfilePage() {
   const displayBmi = calculateBMI(user.weight, user.height);
 
   return (
-    <div className="flex flex-col gap-6 w-full pb-20 select-none">
+    <div className="flex flex-col gap-6 w-full pb-20">
       {/* Header */}
       <div className="mt-2 flex justify-between items-center">
         <div>
