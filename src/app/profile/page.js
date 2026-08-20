@@ -17,6 +17,7 @@ export default function ProfilePage() {
   const { records } = useApp();
 
   // Edit states
+  const [isEditing, setIsEditing] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [age, setAge] = useState('');
@@ -92,6 +93,34 @@ export default function ProfilePage() {
     );
   }
 
+  const resetForm = () => {
+    if (user) {
+      setFirstName(user.firstName || '');
+      setLastName(user.lastName || '');
+      setAge(user.age || 25);
+      setHeightUnit(user.heightUnit || 'cm');
+      setWeightUnit(user.weightUnit || 'kg');
+      
+      const h = user.height || 170;
+      setHeightCm(h);
+      const ftIn = cmToFeetIn(h);
+      setHeightFt(ftIn.feet);
+      setHeightIn(ftIn.inches);
+
+      const w = user.weight || 70;
+      if (user.weightUnit === 'lbs') {
+        setWeightVal(kgToLbs(w));
+      } else {
+        setWeightVal(w);
+      }
+
+      setWorkoutFrequency(user.workoutFrequency || '3-4');
+      setGoal(user.goal || 'maintain');
+      setTargetSteps(user.targetSteps || 10000);
+    }
+    setIsEditing(false);
+  };
+
   const handleHeightUnitChange = (newUnit) => {
     if (newUnit === heightUnit) return;
     setHeightUnit(newUnit);
@@ -145,6 +174,7 @@ export default function ProfilePage() {
     setSaving(false);
     if (res.success) {
       setSuccess('Profile updated successfully.');
+      setIsEditing(false);
       setTimeout(() => setSuccess(''), 3000);
     } else {
       setError(res.error || 'Failed to update profile.');
@@ -274,10 +304,21 @@ export default function ProfilePage() {
 
       {/* Edit Profile Form */}
       <GlassCard className="border-white/5 p-6">
-        <span className="font-manrope text-[10px] font-bold text-white/40 uppercase tracking-widest mb-4 block flex items-center gap-1.5">
-          <User size={11} className="text-accent-red" />
-          Edit Fitness Metrics
-        </span>
+        <div className="flex justify-between items-center mb-4">
+          <span className="font-manrope text-[10px] font-bold text-white/40 uppercase tracking-widest block flex items-center gap-1.5">
+            <User size={11} className="text-accent-red" />
+            Fitness Metrics
+          </span>
+          {!isEditing && (
+            <button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              className="text-xs px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white transition-all font-semibold flex items-center gap-1 focus:outline-none"
+            >
+              Edit Profile
+            </button>
+          )}
+        </div>
 
         <form onSubmit={handleSaveProfile} className="flex flex-col gap-4">
           <div className="flex gap-4">
@@ -286,12 +327,14 @@ export default function ProfilePage() {
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               required
+              disabled={!isEditing}
             />
             <Input
               label="Last Name"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               required
+              disabled={!isEditing}
             />
           </div>
 
@@ -301,6 +344,7 @@ export default function ProfilePage() {
             value={age}
             onChange={(e) => setAge(Math.max(1, parseInt(e.target.value, 10) || ''))}
             required
+            disabled={!isEditing}
           />
 
           {/* Height input with units */}
@@ -312,19 +356,21 @@ export default function ProfilePage() {
               <div className="flex bg-white/3 rounded-full p-0.5 border border-white/5">
                 <button
                   type="button"
+                  disabled={!isEditing}
                   onClick={() => handleHeightUnitChange('cm')}
                   className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold transition-all ${
                     heightUnit === 'cm' ? 'bg-accent-red text-white' : 'text-white/40'
-                  }`}
+                  } ${!isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   CM
                 </button>
                 <button
                   type="button"
+                  disabled={!isEditing}
                   onClick={() => handleHeightUnitChange('ft')}
                   className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold transition-all ${
                     heightUnit === 'ft' ? 'bg-accent-red text-white' : 'text-white/40'
-                  }`}
+                  } ${!isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   FT
                 </button>
@@ -337,6 +383,7 @@ export default function ProfilePage() {
                 value={heightCm}
                 onChange={(e) => setHeightCm(Math.max(1, parseInt(e.target.value, 10) || ''))}
                 required
+                disabled={!isEditing}
               />
             ) : (
               <div className="flex gap-4">
@@ -345,12 +392,14 @@ export default function ProfilePage() {
                   type="number"
                   value={heightFt}
                   onChange={(e) => setHeightFt(Math.max(0, parseInt(e.target.value, 10) || ''))}
+                  disabled={!isEditing}
                 />
                 <Input
                   label="Inches"
                   type="number"
                   value={heightIn}
                   onChange={(e) => setHeightIn(Math.max(0, Math.min(11, parseInt(e.target.value, 10) || '')))}
+                  disabled={!isEditing}
                 />
               </div>
             )}
@@ -365,19 +414,21 @@ export default function ProfilePage() {
               <div className="flex bg-white/3 rounded-full p-0.5 border border-white/5">
                 <button
                   type="button"
+                  disabled={!isEditing}
                   onClick={() => handleWeightUnitChange('kg')}
                   className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold transition-all ${
                     weightUnit === 'kg' ? 'bg-accent-red text-white' : 'text-white/40'
-                  }`}
+                  } ${!isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   KG
                 </button>
                 <button
                   type="button"
+                  disabled={!isEditing}
                   onClick={() => handleWeightUnitChange('lbs')}
                   className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold transition-all ${
                     weightUnit === 'lbs' ? 'bg-accent-red text-white' : 'text-white/40'
-                  }`}
+                  } ${!isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   LBS
                 </button>
@@ -389,6 +440,7 @@ export default function ProfilePage() {
               value={weightVal}
               onChange={(e) => setWeightVal(Math.max(1, parseFloat(e.target.value) || ''))}
               required
+              disabled={!isEditing}
             />
           </div>
 
@@ -400,7 +452,10 @@ export default function ProfilePage() {
             <select
               value={workoutFrequency}
               onChange={(e) => setWorkoutFrequency(e.target.value)}
-              className="w-full py-3.5 px-4 glass-input text-sm font-sans tracking-wide"
+              disabled={!isEditing}
+              className={`w-full py-3.5 px-4 glass-input text-sm font-sans tracking-wide ${
+                !isEditing ? 'opacity-60 cursor-not-allowed' : ''
+              }`}
             >
               <option value="0" className="bg-black">0 Days (Sedentary)</option>
               <option value="1-2" className="bg-black">1-2 Days (Lightly Active)</option>
@@ -418,7 +473,10 @@ export default function ProfilePage() {
             <select
               value={goal}
               onChange={(e) => setGoal(e.target.value)}
-              className="w-full py-3.5 px-4 glass-input text-sm font-sans tracking-wide"
+              disabled={!isEditing}
+              className={`w-full py-3.5 px-4 glass-input text-sm font-sans tracking-wide ${
+                !isEditing ? 'opacity-60 cursor-not-allowed' : ''
+              }`}
             >
               <option value="lose" className="bg-black">Lose Fat</option>
               <option value="maintain" className="bg-black">Maintain Weight</option>
@@ -437,16 +495,29 @@ export default function ProfilePage() {
               value={targetSteps}
               onChange={(e) => setTargetSteps(Math.max(1000, parseInt(e.target.value, 10) || ''))}
               required
+              disabled={!isEditing}
             />
           </div>
 
-          <Button
-            type="submit"
-            loading={saving}
-            className="w-full mt-4 py-3.5 text-sm font-bold shadow-lg shadow-accent-red/10 bg-gradient-to-r from-accent-red to-accent-red-hover"
-          >
-            Update Profile Targets
-          </Button>
+          {isEditing && (
+            <div className="flex gap-3 mt-4">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={resetForm}
+                className="w-1/2 py-3.5 text-sm font-bold"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                loading={saving}
+                className="w-1/2 py-3.5 text-sm font-bold shadow-lg shadow-accent-red/10 bg-gradient-to-r from-accent-red to-accent-red-hover"
+              >
+                Save Changes
+              </Button>
+            </div>
+          )}
         </form>
       </GlassCard>
 
